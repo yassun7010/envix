@@ -1,4 +1,8 @@
 mod command;
+mod error;
+
+pub use error::Error;
+
 use clap::Parser;
 use command::InjectArgs;
 
@@ -11,8 +15,17 @@ pub enum App {
     Inject(InjectArgs),
 }
 
+impl App {
+    pub fn run() -> Result<(), crate::Error> {
+        match App::parse() {
+            App::Inject(args) => command::inject(args),
+        }
+    }
+}
+
 fn main() {
-    match App::parse() {
-        App::Inject(args) => command::inject(args),
+    if let Err(err) = App::run() {
+        eprintln!("Error: {}", err);
+        std::process::exit(1);
     }
 }

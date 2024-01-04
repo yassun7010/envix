@@ -7,9 +7,38 @@ pub struct InjectArgs {
     pub slop: Vec<String>,
 }
 
-pub fn inject(args: InjectArgs) {
-    println!("Injecting...");
-    println!("Envfile: {:?}", args.envfile);
+pub fn inject(args: InjectArgs) -> Result<(), crate::Error> {
+    let option;
+    let mut command = if cfg!(target_os = "windows") {
+        option = "/C";
+        std::process::Command::new("cmd")
+    } else {
+        option = "-c";
+        std::process::Command::new("sh")
+    };
+
+    let output = command
+        .env("FOO", "AAAA")
+        .args([option, args.slop.join(" ").as_str()])
+        .output()?;
+
+    let stdout = trim(&output.stdout);
+    let stderr = trim(&output.stderr);
+
+    if !stdout.is_empty() {
+        println!("{}", stdout);
+    }
+    if !stderr.is_empty() {
+        eprintln!("{}", stderr);
+    }
+
+    (!output.status.success()).then(|| std::process::exit(output.status.code().unwrap_or(1)));
+
+    Ok(())
+}
+
+fn trim(s: &[u8]) -> String {
+    String::from_utf8_lossy(s).to_string().trim().to_string()
 }
 
 #[cfg(test)]
@@ -19,10 +48,7 @@ mod tests {
 
     #[test]
     fn inject_args() {
-        let app = App::parse_from(&["envix", "inject", "--", "echo", "$FOO"]);
-        let args = match app {
-            App::Inject(args) => args,
-        };
+        let App::Inject(args) = App::parse_from(["envix", "inject", "--", "echo", "$FOO"]);
 
         assert_eq!(args.envfile, ".env");
         assert_eq!(args.slop, vec!["echo", "$FOO"]);
@@ -30,7 +56,7 @@ mod tests {
 
     #[test]
     fn inject_args_with_envfile() {
-        let app = App::parse_from(&[
+        let App::Inject(args) = App::parse_from([
             "envix",
             "inject",
             "--envfile",
@@ -39,9 +65,6 @@ mod tests {
             "echo",
             "$FOO",
         ]);
-        let args = match app {
-            App::Inject(args) => args,
-        };
 
         assert_eq!(args.envfile, ".env.test");
         assert_eq!(args.slop, vec!["echo", "$FOO"]);
