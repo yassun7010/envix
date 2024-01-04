@@ -16,9 +16,9 @@ pub fn inject(args: InjectArgs) -> Result<(), crate::Error> {
         option = "-c";
         std::process::Command::new("sh")
     };
+    std::env::set_var("FOO", "BBBB");
 
     let output = command
-        .env("FOO", "AAAA")
         .args([option, args.slop.join(" ").as_str()])
         .output()?;
 
