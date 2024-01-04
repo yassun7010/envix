@@ -39,6 +39,8 @@ mod tests {
         let args = match app {
             App::Inject(args) => args,
         };
+
+        assert_eq!(args.envfile, ".env");
         assert_eq!(args.slop, vec!["echo", "$FOO"]);
     }
 
