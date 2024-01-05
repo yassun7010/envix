@@ -6,12 +6,15 @@ pub struct InjectArgs {
     #[arg(short, long, default_value = ".env")]
     pub envfile: String,
 
+    #[arg(long)]
+    pub stage: Option<String>,
+
     #[arg(last = true)]
     pub slop: Vec<String>,
 }
 
 pub fn inject(args: InjectArgs) -> Result<(), crate::Error> {
-    let config = crate::config::from_filepath(args.config)?;
+    let config = crate::config::from_filepath(args.config, args.stage.as_deref())?;
     println!("Config: {:?}", config);
 
     let option;

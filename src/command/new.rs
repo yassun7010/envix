@@ -7,12 +7,12 @@ pub struct NewArgs {
 }
 
 pub fn new(args: NewArgs) -> Result<(), crate::Error> {
-    let config = crate::Config {
-        envix: crate::config::EnvixInfo {
-            version: crate::config::ConfigVersion::V1,
+    let config = crate::Config::V1(crate::config::v1::ConfigV1 {
+        envix: crate::config::v1::ConfigV1Info {
+            version: crate::config::v1::ConfigV1Version::V1,
         },
-        vars: Default::default(),
-    };
+        ..Default::default()
+    });
     if args.config.exists() {
         return Err(crate::Error::ConfigExists(args.config));
     }
