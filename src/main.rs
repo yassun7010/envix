@@ -12,8 +12,8 @@ pub use error::Error;
 #[command(bin_name = "envix")]
 #[command(author, version, about, long_about = None)]
 pub enum App {
-    Inject(InjectArgs),
     New(NewArgs),
+    Inject(InjectArgs),
 }
 
 impl App {

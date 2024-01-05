@@ -108,6 +108,7 @@ version = "0.1.0"
 dependencies = [
  "assert_matches",
  "clap",
+ "indexmap",
  "serde",
  "serde_repr",
  "thiserror",
@@ -140,6 +141,7 @@ checksum = "d530e1a18b1cb4c484e6e34556a0d948706958449fca0cab753d649f2bce3d1f"
 dependencies = [
  "equivalent",
  "hashbrown",
+ "serde",
 ]
 
 [[package]]

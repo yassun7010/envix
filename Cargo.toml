@@ -8,6 +8,7 @@ description = "Environment variable injection tool."
 
 [dependencies]
 clap = { version = "4.4.12", features = ["derive"] }
+indexmap = { version = "2.1.0", features = ["serde"] }
 serde = { version = "1.0.194", features = ["derive"] }
 serde_repr = "0.1.18"
 thiserror = "1.0.56"

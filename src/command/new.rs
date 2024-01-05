@@ -11,6 +11,7 @@ pub fn new(args: NewArgs) -> Result<(), crate::Error> {
         envix: crate::config::EnvixInfo {
             version: crate::config::ConfigVersion::V1,
         },
+        vars: Default::default(),
     };
     if args.config.exists() {
         return Err(crate::Error::ConfigExists(args.config));

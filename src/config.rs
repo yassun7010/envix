@@ -3,6 +3,7 @@ use std::io::Read;
 #[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct Config {
     pub envix: EnvixInfo,
+    pub vars: indexmap::IndexMap<String, String>,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug)]
