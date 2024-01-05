@@ -1,0 +1,10 @@
+[envix]
+version = 1
+
+[vars]
+FOO = "bar"
+
+[stage]
+default = "dev"
+
+[stages.dev.vars]

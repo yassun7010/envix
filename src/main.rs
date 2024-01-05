@@ -1,23 +1,33 @@
 mod command;
+mod config;
 mod error;
 
-pub use error::Error;
-
 use clap::Parser;
-use command::InjectArgs;
+use command::{InjectArgs, NewArgs};
+pub use config::Config;
+pub use error::Error;
 
 #[derive(Parser)]
 #[command(name = "envix")]
 #[command(bin_name = "envix")]
 #[command(author, version, about, long_about = None)]
 pub enum App {
-    /// Inject environment variables into shell command
     Inject(InjectArgs),
+    New(NewArgs),
 }
 
 impl App {
     pub fn run() -> Result<(), crate::Error> {
-        match App::parse() {
+        App::run_from(std::env::args_os())
+    }
+
+    pub fn run_from<I, T>(itr: I) -> Result<(), crate::Error>
+    where
+        I: IntoIterator<Item = T>,
+        T: Into<std::ffi::OsString> + Clone,
+    {
+        match App::parse_from(itr) {
+            App::New(args) => command::new(args),
             App::Inject(args) => command::inject(args),
         }
     }
@@ -28,4 +38,9 @@ fn main() {
         eprintln!("Error: {}", err);
         std::process::exit(1);
     }
+}
+
+#[cfg(test)]
+pub mod tests {
+    pub type Result = std::result::Result<(), Box<dyn std::error::Error>>;
 }

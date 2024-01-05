@@ -1,5 +1,8 @@
 #[derive(clap::Args)]
 pub struct InjectArgs {
+    #[arg(long, default_value = "envix.toml")]
+    pub config: std::path::PathBuf,
+
     #[arg(short, long, default_value = ".env")]
     pub envfile: String,
 
@@ -8,6 +11,9 @@ pub struct InjectArgs {
 }
 
 pub fn inject(args: InjectArgs) -> Result<(), crate::Error> {
+    let config = crate::config::from_filepath(args.config)?;
+    println!("Config: {:?}", config);
+
     let option;
     let mut command = if cfg!(target_os = "windows") {
         option = "/C";
@@ -47,15 +53,19 @@ mod tests {
     use clap::Parser;
 
     #[test]
-    fn inject_args() {
-        let App::Inject(args) = App::parse_from(["envix", "inject", "--", "echo", "$FOO"]);
+    fn inject_args() -> crate::tests::Result {
+        let App::Inject(args) = App::parse_from(["envix", "inject", "--", "echo", "$FOO"]) else {
+            panic!("Expected Inject variant")
+        };
 
         assert_eq!(args.envfile, ".env");
         assert_eq!(args.slop, vec!["echo", "$FOO"]);
+
+        Ok(())
     }
 
     #[test]
-    fn inject_args_with_envfile() {
+    fn inject_args_with_envfile() -> crate::tests::Result {
         let App::Inject(args) = App::parse_from([
             "envix",
             "inject",
@@ -64,9 +74,13 @@ mod tests {
             "--",
             "echo",
             "$FOO",
-        ]);
+        ]) else {
+            panic!("Expected Inject variant")
+        };
 
         assert_eq!(args.envfile, ".env.test");
         assert_eq!(args.slop, vec!["echo", "$FOO"]);
+
+        Ok(())
     }
 }
