@@ -3,7 +3,6 @@ mod config;
 mod error;
 
 use clap::Parser;
-use command::{InjectArgs, NewArgs};
 pub use config::Config;
 pub use error::Error;
 
@@ -12,8 +11,14 @@ pub use error::Error;
 #[command(bin_name = "envix")]
 #[command(author, version, about, long_about = None)]
 pub enum App {
-    New(NewArgs),
-    Inject(InjectArgs),
+    /// Create a new envix config file
+    New(command::NewArgs),
+
+    /// Inject the environment variables into a command
+    Inject(command::InjectArgs),
+
+    /// Print the environment variables
+    Print(command::PrintArgs),
 }
 
 impl App {
@@ -29,6 +34,7 @@ impl App {
         match App::parse_from(itr) {
             App::New(args) => command::new(args),
             App::Inject(args) => command::inject(args),
+            App::Print(args) => command::print(args),
         }
     }
 }

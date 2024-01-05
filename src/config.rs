@@ -8,19 +8,23 @@ pub enum Config {
 }
 
 impl Config {
-    pub fn get_vars<'a>(
-        &'a self,
-        _stage: Option<&str>,
-    ) -> impl Iterator<Item = (&'a str, &'a str)> {
+    pub fn get_vars<'a>(&'a self, stage: Option<&str>) -> impl Iterator<Item = (&'a str, &'a str)> {
         match self {
             Config::V1(config) => {
-                let vars = config.vars.iter().map(|(k, v)| (k.as_str(), v.as_str()));
-                // if let Some(stage) = stage {
-                //     if let Some(stage) = config.stages.get(stage) {
-                //         vars.extend(stage.vars.clone());
-                //     }
-                // }
-                vars
+                let mut vars: indexmap::IndexMap<&str, &str> = config
+                    .vars
+                    .iter()
+                    .map(|(k, v)| (k.as_str(), v.as_str()))
+                    .collect();
+
+                if let Some(stage) = stage {
+                    if let Some(stage) = config.stages.get(stage) {
+                        for (k, v) in stage.vars.iter() {
+                            vars.insert(k.as_str(), v.as_str());
+                        }
+                    }
+                }
+                vars.into_iter()
             }
         }
     }

@@ -8,3 +8,4 @@ FOO = "bar"
 default = "dev"
 
 [stages.dev.vars]
+FOO = "dev_bar"

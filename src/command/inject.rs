@@ -12,7 +12,6 @@ pub struct InjectArgs {
 
 pub fn inject(args: InjectArgs) -> Result<(), crate::Error> {
     let config = crate::config::from_filepath(args.config, args.stage.as_deref())?;
-    println!("Config: {:?}", config);
 
     let option;
     let mut command = if cfg!(target_os = "windows") {
