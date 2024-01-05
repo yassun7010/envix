@@ -34,3 +34,8 @@ Use
 envix inject -- your command
 envix inject --stage prd -- your command
 ```
+
+## Not dotenv
+`envix` use `envix.toml` instead of `.env`.
+
+The `.env` format specification is very vague. Many hacks have extended the functionality, but we have decided that following a simple and sufficient file format such as [toml](https://toml.io/en/) is a more beneficial choice than implementing those special implementations in `envix`.
