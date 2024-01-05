@@ -27,12 +27,20 @@ pub struct Stage {
     pub vars: indexmap::IndexMap<String, String>,
 }
 
-pub(crate) fn validate_v1(config: &ConfigV1, stage: Option<&str>) -> Result<(), crate::Error> {
+pub(crate) fn validate_v1(config: &ConfigV1, stage: Option<&str>) -> Result<(), Error> {
     if !config.stages.is_empty() {
         if let Some(stage) = stage {
-            println!("Stage: {}", stage);
+            if !config.stages.contains_key(stage) {
+                return Err(Error::StageNotFound(stage.to_owned()));
+            }
         }
     }
 
     Ok(())
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+    #[error("\"stages.{0}\" does not found in config file.")]
+    StageNotFound(String),
 }
