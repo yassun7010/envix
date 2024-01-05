@@ -56,7 +56,7 @@ mod tests {
     use clap::Parser;
 
     #[test]
-    fn inject_args() -> crate::tests::Result {
+    fn run_inject_command() -> crate::tests::Result {
         let App::Inject(args) = App::parse_from(["envix", "inject", "--", "echo", "$FOO"]) else {
             panic!("Expected Inject variant")
         };
@@ -68,7 +68,7 @@ mod tests {
     }
 
     #[test]
-    fn inject_args_with_envfile() -> crate::tests::Result {
+    fn run_inject_command_with_config_option() -> crate::tests::Result {
         let App::Inject(args) = App::parse_from([
             "envix",
             "inject",

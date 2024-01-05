@@ -4,6 +4,9 @@ version = 1
 [vars]
 FOO = "bar"
 
+[secrets]
+BAR = "baz"
+
 [stage]
 default = "dev"
 

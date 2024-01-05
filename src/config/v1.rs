@@ -1,7 +1,8 @@
 #[derive(serde::Serialize, serde::Deserialize, Debug, Default)]
 pub struct ConfigV1 {
     pub envix: ConfigV1Info,
-    pub vars: indexmap::IndexMap<String, String>,
+    #[serde(flatten)]
+    pub common: Stage,
     pub stages: indexmap::IndexMap<String, Stage>,
 }
 
@@ -22,9 +23,10 @@ impl Default for ConfigV1Version {
     }
 }
 
-#[derive(serde::Serialize, serde::Deserialize, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Default)]
 pub struct Stage {
     pub vars: indexmap::IndexMap<String, String>,
+    pub secrets: indexmap::IndexMap<String, String>,
 }
 
 pub(crate) fn validate_v1(config: &ConfigV1, stage: Option<&str>) -> Result<(), Error> {

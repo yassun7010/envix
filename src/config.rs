@@ -12,6 +12,7 @@ impl Config {
         match self {
             Config::V1(config) => {
                 let mut vars: indexmap::IndexMap<&str, &str> = config
+                    .common
                     .vars
                     .iter()
                     .map(|(k, v)| (k.as_str(), v.as_str()))
