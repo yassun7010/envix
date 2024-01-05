@@ -7,6 +7,25 @@ pub enum Config {
     V1(v1::ConfigV1),
 }
 
+impl Config {
+    pub fn get_vars<'a>(
+        &'a self,
+        _stage: Option<&str>,
+    ) -> impl Iterator<Item = (&'a str, &'a str)> {
+        match self {
+            Config::V1(config) => {
+                let vars = config.vars.iter().map(|(k, v)| (k.as_str(), v.as_str()));
+                // if let Some(stage) = stage {
+                //     if let Some(stage) = config.stages.get(stage) {
+                //         vars.extend(stage.vars.clone());
+                //     }
+                // }
+                vars
+            }
+        }
+    }
+}
+
 pub fn from_filepath<P: AsRef<std::path::Path>>(
     filename: P,
     stage: Option<&str>,

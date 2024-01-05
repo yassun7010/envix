@@ -3,9 +3,6 @@ pub struct InjectArgs {
     #[arg(long, default_value = "envix.toml")]
     pub config: std::path::PathBuf,
 
-    #[arg(short, long, default_value = ".env")]
-    pub envfile: String,
-
     #[arg(long)]
     pub stage: Option<String>,
 
@@ -25,7 +22,10 @@ pub fn inject(args: InjectArgs) -> Result<(), crate::Error> {
         option = "-c";
         std::process::Command::new("sh")
     };
-    std::env::set_var("FOO", "BBBB");
+
+    for (key, value) in config.get_vars(args.stage.as_deref()) {
+        command.env(key, value);
+    }
 
     let output = command
         .args([option, args.slop.join(" ").as_str()])
@@ -53,6 +53,7 @@ fn trim(s: &[u8]) -> String {
 #[cfg(test)]
 mod tests {
     use crate::App;
+    use assert_matches::assert_matches;
     use clap::Parser;
 
     #[test]
@@ -61,7 +62,7 @@ mod tests {
             panic!("Expected Inject variant")
         };
 
-        assert_eq!(args.envfile, ".env");
+        assert_eq!(args.config.to_string_lossy(), "envix.toml");
         assert_eq!(args.slop, vec!["echo", "$FOO"]);
 
         Ok(())
@@ -72,8 +73,8 @@ mod tests {
         let App::Inject(args) = App::parse_from([
             "envix",
             "inject",
-            "--envfile",
-            ".env.test",
+            "--config",
+            "test.toml",
             "--",
             "echo",
             "$FOO",
@@ -81,7 +82,7 @@ mod tests {
             panic!("Expected Inject variant")
         };
 
-        assert_eq!(args.envfile, ".env.test");
+        assert_matches!(args.config.to_str(), Some("test.toml"));
         assert_eq!(args.slop, vec!["echo", "$FOO"]);
 
         Ok(())
