@@ -130,7 +130,6 @@ dependencies = [
  "assert_matches",
  "clap",
  "indexmap",
- "log",
  "rstest",
  "serde",
  "serde_json",
@@ -138,7 +137,6 @@ dependencies = [
  "thiserror",
  "toml",
  "tracing",
- "tracing-log",
  "tracing-subscriber",
 ]
 

@@ -63,7 +63,7 @@ impl Config {
 
         for (k, _) in self.get_secrets(stage) {
             if vars.contains_key(k) {
-                log::warn!("Secret \"{}\" is already defined in vars", k)
+                tracing::warn!("Secret \"{}\" is already defined in vars", k)
             }
             vars.insert(k, "*****************************");
         }
