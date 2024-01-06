@@ -34,9 +34,14 @@ pub struct Stage {
 
 pub(crate) fn validate_v1(config: &ConfigV1, stage: Option<&str>) -> Result<(), Error> {
     if !config.stages.is_empty() {
-        if let Some(stage) = stage {
-            if !config.stages.contains_key(stage) {
-                return Err(Error::StageNotFound(stage.to_owned()));
+        match stage {
+            Some(stage) => {
+                if !config.stages.contains_key(stage) {
+                    return Err(Error::StageNotFound(stage.to_owned()));
+                }
+            }
+            None => {
+                return Err(Error::StageNotSpecified);
             }
         }
     }
@@ -48,4 +53,7 @@ pub(crate) fn validate_v1(config: &ConfigV1, stage: Option<&str>) -> Result<(), 
 pub enum Error {
     #[error("\"stages.{0}\" does not found in config file.")]
     StageNotFound(String),
+
+    #[error("Stage is not specified.")]
+    StageNotSpecified,
 }
