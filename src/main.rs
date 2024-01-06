@@ -46,10 +46,11 @@ fn main() {
         .with_writer(std::io::stderr)
         .finish();
 
+    tracing_log::LogTracer::init().unwrap();
     tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
 
     if let Err(err) = App::run() {
-        tracing::error!("{}", err);
+        log::error!("{}", err);
         std::process::exit(1);
     }
 }
