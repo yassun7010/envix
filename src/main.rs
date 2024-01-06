@@ -49,4 +49,12 @@ fn main() {
 #[cfg(test)]
 pub mod tests {
     pub type Result = std::result::Result<(), Box<dyn std::error::Error>>;
+
+    macro_rules! config {
+        ($fname:expr) => {
+            concat!(env!("CARGO_MANIFEST_DIR"), "/tests/config/", $fname)
+        };
+    }
+
+    pub(crate) use config;
 }

@@ -1,0 +1,8 @@
+[envix]
+version = 1
+
+[vars]
+FOO = "foo"
+
+[stages.dev.vars]
+FOO = "dev_foo"

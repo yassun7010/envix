@@ -5,7 +5,7 @@ pub struct PrintArgs {
     pub config: std::path::PathBuf,
 
     /// Format style
-    #[arg(long, default_value = "pretty")]
+    #[arg(long, default_value = "env")]
     pub format: PrintFormat,
 
     /// Stage name
@@ -15,19 +15,19 @@ pub struct PrintArgs {
 
 #[derive(Clone, Copy, Debug)]
 pub enum PrintFormat {
-    Pretty,
     Env,
+    Json,
 }
 
 impl clap::ValueEnum for PrintFormat {
     fn value_variants<'a>() -> &'a [Self] {
-        &[PrintFormat::Pretty, PrintFormat::Env]
+        &[PrintFormat::Env, PrintFormat::Json]
     }
 
     fn to_possible_value(&self) -> Option<clap::builder::PossibleValue> {
         match self {
-            PrintFormat::Pretty => Some(clap::builder::PossibleValue::new("pretty")),
             PrintFormat::Env => Some(clap::builder::PossibleValue::new("env")),
+            PrintFormat::Json => Some(clap::builder::PossibleValue::new("json")),
         }
     }
 }
@@ -37,8 +37,8 @@ impl std::str::FromStr for PrintFormat {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "pretty" => Ok(Self::Pretty),
             "env" => Ok(Self::Env),
+            "json" => Ok(Self::Json),
             _ => Err(format!("Invalid format: {}", s)),
         }
     }
@@ -46,46 +46,89 @@ impl std::str::FromStr for PrintFormat {
 
 pub fn print(args: PrintArgs) -> Result<(), crate::Error> {
     let config = crate::config::from_filepath(args.config, args.stage.as_deref())?;
-    let stage = args.stage.as_deref();
+    let vars_and_secrets = config.get_vars_and_secrets(args.stage.as_deref());
 
     match args.format {
-        PrintFormat::Pretty => print_pretty(config, stage),
-        PrintFormat::Env => print_env(config, stage),
+        PrintFormat::Env => print_env(vars_and_secrets),
+        PrintFormat::Json => print_json(vars_and_secrets),
     }
 
     Ok(())
 }
 
-fn print_pretty(config: crate::Config, stage: Option<&str>) {
-    for (key, value) in config.get_vars(stage) {
-        println!("{} = {}", key, value);
-    }
-    for (key, _) in config.get_secrets(stage) {
-        println!("{} = *****************************", key);
-    }
+fn print_json(vars_and_secrets: indexmap::IndexMap<&str, &str>) {
+    println!(
+        "{}",
+        serde_json::to_string_pretty(&vars_and_secrets).unwrap()
+    );
 }
 
-fn print_env(config: crate::Config, stage: Option<&str>) {
-    for (key, value) in config.get_vars(stage) {
+fn print_env(vars_and_secrets: indexmap::IndexMap<&str, &str>) {
+    for (key, value) in vars_and_secrets {
         println!("{}={}", key, value);
-    }
-    for (key, _) in config.get_secrets(stage) {
-        println!("{}=*****************************", key);
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::App;
+    use assert_matches::assert_matches;
     use clap::Parser;
+    use rstest::rstest;
 
     #[test]
-    fn print_args() -> crate::tests::Result {
+    fn run_print_command() -> crate::tests::Result {
         let App::Print(args) = App::parse_from(["envix", "print"]) else {
             panic!("Expected Inject variant")
         };
 
         assert_eq!(args.config.to_string_lossy(), "envix.toml");
+        assert_matches!(
+            print(args),
+            Err(crate::Error::ConfigV1(
+                crate::config::v1::Error::StageNotSpecified
+            ))
+        );
+
+        Ok(())
+    }
+
+    #[rstest(
+        config_filepath => [
+            crate::tests::config!("envix.toml"),
+            crate::tests::config!("envix_only_secrets.toml"),
+            crate::tests::config!("envix_only_vars.toml"),
+        ]
+    )]
+    fn run_print_command_with_config_option(config_filepath: &str) -> crate::tests::Result {
+        let App::Print(args) = App::parse_from(["envix", "print", "--config", config_filepath])
+        else {
+            panic!("Expected Inject variant")
+        };
+
+        assert_eq!(args.config.to_string_lossy(), config_filepath);
+
+        print(args)?;
+
+        Ok(())
+    }
+
+    #[test]
+    fn run_print_command_with_wrong_config_option() -> crate::tests::Result {
+        let result = App::run_from([
+            "envix",
+            "print",
+            "--config",
+            crate::tests::config!("envix_only_vars_with_stage.toml"),
+        ]);
+
+        assert_matches!(
+            result,
+            Err(crate::Error::ConfigV1(
+                crate::config::v1::Error::StageNotSpecified
+            ))
+        );
 
         Ok(())
     }

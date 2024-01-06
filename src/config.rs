@@ -54,6 +54,19 @@ impl Config {
             }
         }
     }
+
+    pub fn get_vars_and_secrets<'a>(
+        &'a self,
+        stage: Option<&str>,
+    ) -> indexmap::IndexMap<&'a str, &'a str> {
+        let mut vars: indexmap::IndexMap<&str, &str> = self.get_vars(stage).collect();
+
+        for (k, _) in self.get_secrets(stage) {
+            vars.insert(k, "*****************************");
+        }
+
+        vars
+    }
 }
 
 pub fn from_filepath<P: AsRef<std::path::Path>>(

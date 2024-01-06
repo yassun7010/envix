@@ -1,8 +1,11 @@
 #[derive(serde::Serialize, serde::Deserialize, Debug, Default)]
 pub struct ConfigV1 {
     pub envix: ConfigV1Info,
+
     #[serde(flatten)]
     pub common: Stage,
+
+    #[serde(default)]
     pub stages: indexmap::IndexMap<String, Stage>,
 }
 

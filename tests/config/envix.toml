@@ -1,0 +1,8 @@
+[envix]
+version = 1
+
+[vars]
+FOO = "foo"
+
+[secrets]
+BAR = "bar"

@@ -1,0 +1,5 @@
+[envix]
+version = 1
+
+[vars]
+FOO = "foo"
