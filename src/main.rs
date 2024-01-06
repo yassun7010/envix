@@ -40,8 +40,16 @@ impl App {
 }
 
 fn main() {
+    let subscriber = tracing_subscriber::FmtSubscriber::builder()
+        .map_event_format(|e| e.compact().with_target(false).without_time())
+        .with_max_level(tracing::Level::INFO)
+        .with_writer(std::io::stderr)
+        .finish();
+
+    tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
+
     if let Err(err) = App::run() {
-        eprintln!("Error: {}", err);
+        tracing::error!("{}", err);
         std::process::exit(1);
     }
 }

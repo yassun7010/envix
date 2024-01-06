@@ -62,6 +62,9 @@ impl Config {
         let mut vars: indexmap::IndexMap<&str, &str> = self.get_vars(stage).collect();
 
         for (k, _) in self.get_secrets(stage) {
+            if vars.contains_key(k) {
+                tracing::warn!("Secret \"{}\" is already defined in vars", k)
+            }
             vars.insert(k, "*****************************");
         }
 

@@ -2,13 +2,14 @@
 version = 1
 
 [vars]
-FOO = "bar"
+FOO = "foo"
 
 [secrets]
-BAR = "baz"
+FOO = "foo"
+BAR = "bar"
 
 [stage]
 default = "dev"
 
 [stages.dev.vars]
-FOO = "dev_bar"
+FOO = "dev_foo"
