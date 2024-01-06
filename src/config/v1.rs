@@ -25,7 +25,10 @@ impl Default for ConfigV1Version {
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, Default)]
 pub struct Stage {
+    #[serde(default)]
     pub vars: indexmap::IndexMap<String, String>,
+
+    #[serde(default)]
     pub secrets: indexmap::IndexMap<String, String>,
 }
 

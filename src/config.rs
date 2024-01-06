@@ -29,6 +29,31 @@ impl Config {
             }
         }
     }
+
+    pub fn get_secrets<'a>(
+        &'a self,
+        stage: Option<&str>,
+    ) -> impl Iterator<Item = (&'a str, &'a str)> {
+        match self {
+            Config::V1(config) => {
+                let mut secrets: indexmap::IndexMap<&str, &str> = config
+                    .common
+                    .secrets
+                    .iter()
+                    .map(|(k, v)| (k.as_str(), v.as_str()))
+                    .collect();
+
+                if let Some(stage) = stage {
+                    if let Some(stage) = config.stages.get(stage) {
+                        for (k, v) in stage.secrets.iter() {
+                            secrets.insert(k.as_str(), v.as_str());
+                        }
+                    }
+                }
+                secrets.into_iter()
+            }
+        }
+    }
 }
 
 pub fn from_filepath<P: AsRef<std::path::Path>>(

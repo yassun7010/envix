@@ -13,6 +13,9 @@ pub fn print(args: PrintArgs) -> Result<(), crate::Error> {
     for (key, value) in config.get_vars(args.stage.as_deref()) {
         println!("{}={}", key, value);
     }
+    for (key, _) in config.get_secrets(args.stage.as_deref()) {
+        println!("{}=*****************************", key);
+    }
 
     Ok(())
 }
