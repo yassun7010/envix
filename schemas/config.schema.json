@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Config",
+  "description": "Envix config.",
+  "anyOf": [
+    {
+      "$ref": "#/definitions/ConfigV1"
+    }
+  ],
+  "definitions": {
+    "ConfigV1": {
+      "description": "Envix config version 1.",
+      "type": "object",
+      "required": [
+        "envix"
+      ],
+      "properties": {
+        "envix": {
+          "$ref": "#/definitions/ConfigV1Info"
+        },
+        "envs": {
+          "default": {},
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/Value"
+          }
+        },
+        "stages": {
+          "default": {},
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/Stage"
+          }
+        }
+      }
+    },
+    "ConfigV1Info": {
+      "type": "object",
+      "required": [
+        "version"
+      ],
+      "properties": {
+        "version": {
+          "$ref": "#/definitions/ConfigV1Version"
+        }
+      }
+    },
+    "ConfigV1Version": {
+      "type": "integer",
+      "enum": [
+        1
+      ]
+    },
+    "Service": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "resource_name",
+            "service"
+          ],
+          "properties": {
+            "resource_name": {
+              "description": "resource name.",
+              "examples": [
+                [
+                  "projects/1234567890/secrets/secret_name",
+                  "projects/1234567890/secrets/secret_name/versions/2"
+                ]
+              ],
+              "type": "string"
+            },
+            "service": {
+              "type": "string",
+              "enum": [
+                "GoogleCloudSecretManager"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "Stage": {
+      "type": "object",
+      "properties": {
+        "envs": {
+          "default": {},
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/Value"
+          }
+        }
+      }
+    },
+    "Value": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "$ref": "#/definitions/Service"
+        }
+      ]
+    }
+  }
+}

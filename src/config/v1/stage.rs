@@ -1,11 +1,7 @@
-use super::env::Env;
-use super::service::Service;
+use super::env::Value;
 
-#[derive(serde::Serialize, serde::Deserialize, Debug, Default)]
+#[derive(serde::Serialize, serde::Deserialize, schemars::JsonSchema, Debug, Default)]
 pub struct Stage {
     #[serde(default)]
-    pub envs: indexmap::IndexMap<String, Env>,
-
-    #[serde(default)]
-    pub services: indexmap::IndexMap<String, Service>,
+    pub envs: indexmap::IndexMap<String, Value>,
 }

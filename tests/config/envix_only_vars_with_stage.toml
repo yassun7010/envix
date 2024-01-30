@@ -1,8 +1,8 @@
 [envix]
 version = 1
 
-[vars]
+[envs]
 FOO = "foo"
 
-[stages.dev.vars]
+[stages.dev.envs]
 FOO = "dev_foo"

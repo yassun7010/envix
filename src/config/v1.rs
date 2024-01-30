@@ -1,4 +1,6 @@
-use self::service::Service;
+use std::borrow::Cow;
+
+use self::stage::Stage;
 
 mod env;
 mod service;
@@ -6,7 +8,7 @@ mod stage;
 use crate::env::ExpandEnvs;
 
 /// Envix config version 1.
-#[derive(serde::Serialize, serde::Deserialize, Debug, Default)]
+#[derive(serde::Serialize, serde::Deserialize, schemars::JsonSchema, Debug, Default)]
 pub struct ConfigV1 {
     pub envix: ConfigV1Info,
 
@@ -26,33 +28,36 @@ impl ExpandEnvs for ConfigV1 {
     }
 }
 
-#[derive(serde::Serialize, serde::Deserialize, Debug, Default)]
+#[derive(serde::Serialize, serde::Deserialize, schemars::JsonSchema, Debug, Default)]
 pub struct ConfigV1Info {
     pub version: ConfigV1Version,
 }
 
-#[derive(serde_repr::Serialize_repr, serde_repr::Deserialize_repr, PartialEq, Debug)]
+#[derive(serde_repr::Serialize_repr, serde_repr::Deserialize_repr, PartialEq, Debug, Default)]
 #[repr(u8)]
 pub enum ConfigV1Version {
+    #[default]
     V1 = 1,
 }
 
-impl Default for ConfigV1Version {
-    fn default() -> Self {
-        Self::V1
+impl schemars::JsonSchema for ConfigV1Version {
+    fn schema_name() -> String {
+        // Exclude the module path to make the name in generated schemas clearer.
+        "ConfigV1Version".to_owned()
     }
-}
 
-#[derive(serde::Serialize, serde::Deserialize, Debug, Default)]
-pub struct Stage {
-    #[serde(default)]
-    pub envs: indexmap::IndexMap<String, env::Env>,
+    fn schema_id() -> Cow<'static, str> {
+        // Include the module, in case a type with the same name is in another module/crate
+        Cow::Borrowed(concat!(module_path!(), "::ConfigV1Version"))
+    }
 
-    #[serde(default)]
-    pub services: indexmap::IndexMap<String, Service>,
-
-    #[serde(default)]
-    pub stages: indexmap::IndexMap<String, Stage>,
+    fn json_schema(_gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        schemars::schema::Schema::Object(schemars::schema::SchemaObject {
+            instance_type: Some(schemars::schema::InstanceType::Integer.into()),
+            enum_values: Some(vec![1.into()]),
+            ..Default::default()
+        })
+    }
 }
 
 // pub(crate) fn get_stage(config: &ConfigV1, stage: Option<&str>) -> Result<(), Error> {

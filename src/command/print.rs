@@ -97,9 +97,9 @@ mod tests {
 
     #[rstest(
         config_filepath => [
-            crate::tests::config!("envix.toml"),
-            crate::tests::config!("envix_only_secrets.toml"),
-            crate::tests::config!("envix_only_vars.toml"),
+            crate::tests::repository_root!("tests/config/envix.toml"),
+            crate::tests::repository_root!("tests/config/envix_only_secrets.toml"),
+            crate::tests::repository_root!("tests/config/envix_only_vars.toml"),
         ]
     )]
     fn run_print_command_with_config_option(config_filepath: &str) -> crate::tests::Result {
@@ -121,7 +121,7 @@ mod tests {
             "envix",
             "print",
             "--config",
-            crate::tests::config!("envix_only_vars_with_stage.toml"),
+            crate::tests::repository_root!("tests/config/envix_only_vars_with_stage.toml"),
         ]);
 
         // assert_matches!(
