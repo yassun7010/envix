@@ -1,5 +1,6 @@
 mod command;
 mod config;
+mod env;
 mod error;
 
 use clap::Parser;
@@ -58,11 +59,11 @@ fn main() {
 pub mod tests {
     pub type Result = std::result::Result<(), Box<dyn std::error::Error>>;
 
-    macro_rules! config {
+    macro_rules! repository_root {
         ($fname:expr) => {
-            concat!(env!("CARGO_MANIFEST_DIR"), "/tests/config/", $fname)
+            concat!(env!("CARGO_MANIFEST_DIR"), "/", $fname)
         };
     }
 
-    pub(crate) use config;
+    pub(crate) use repository_root;
 }

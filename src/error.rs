@@ -7,9 +7,6 @@ pub enum Error {
     ConfigNotFound(std::path::PathBuf),
 
     #[error(transparent)]
-    ConfigV1(#[from] crate::config::v1::Error),
-
-    #[error(transparent)]
     IO(#[from] std::io::Error),
 
     #[error(transparent)]

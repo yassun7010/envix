@@ -10,4 +10,12 @@
     "editor.formatOnPaste": true,
     "editor.comments.insertSpace": true,
     "rust-analyzer.check.command": "clippy",
+    "rust-analyzer.linkedProjects": [
+        "./Cargo.toml",
+    ],
+    "yaml.schemas": {
+        "./schemas/config.schema.json": [
+            "envix*.yml"
+        ]
+    }
 }

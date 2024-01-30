@@ -1,3 +1,5 @@
+use crate::env::ExpandEnvs;
+
 #[derive(clap::Args)]
 pub struct InjectArgs {
     #[arg(long, default_value = "envix.toml")]
@@ -11,7 +13,7 @@ pub struct InjectArgs {
 }
 
 pub fn inject(args: InjectArgs) -> Result<(), crate::Error> {
-    let config = crate::config::from_filepath(args.config, args.stage.as_deref())?;
+    let config = crate::config::from_filepath(args.config)?;
 
     let option;
     let mut command = if cfg!(target_os = "windows") {
@@ -22,8 +24,8 @@ pub fn inject(args: InjectArgs) -> Result<(), crate::Error> {
         std::process::Command::new("sh")
     };
 
-    for (key, value) in config.get_vars(args.stage.as_deref()) {
-        command.env(key, value);
+    for (key, value) in config.expand_envs(args.stage.as_deref())? {
+        command.env(key, value.to_revel());
     }
 
     let output = command

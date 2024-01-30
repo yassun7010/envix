@@ -1,0 +1,5 @@
+envix:
+  version: 1
+
+envs:
+  FOO: { service: GoogleCloudSecretManager, resource_name: secret_name }
