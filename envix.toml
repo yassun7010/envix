@@ -1,15 +1,10 @@
 [envix]
 version = 1
 
-[vars]
+[envs]
 FOO = "foo"
+BAR = { service = "GoogleSecretManager", key = "bar" }
 
-[secrets]
-FOO = "foo"
-BAR = "bar"
-
-[stage]
-default = "dev"
-
-[stages.dev.vars]
-FOO = "dev_foo"
+[[services]]
+type = "google_cloud_secret_manager"
+project_id = "123456789"

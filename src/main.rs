@@ -1,6 +1,8 @@
 mod command;
 mod config;
+mod env;
 mod error;
+mod service;
 
 use clap::Parser;
 pub use config::Config;
